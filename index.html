@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kapsul Waktu Nusantara - Edisi Ultimate</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for Audio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        scifi: ['Orbitron', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                        pixel: ['"Press Start 2P"', 'cursive'], // Font 8-Bit baru
+                    },
+                    colors: {
+                        hologram: '#00f3ff',
+                        gold: '#ffd700',
+                        darkbg: '#0b0f19',
+                        panel: 'rgba(17, 25, 40, 0.75)'
+                    },
+                    boxShadow: {
+                        'neon-blue': '0 0 10px #00f3ff, 0 0 20px #00f3ff',
+                        'neon-gold': '0 0 10px #ffd700, 0 0 20px #ffd700',
+                        '8bit-white': '4px 4px 0px 0px rgba(255,255,255,0.2)',
+                        '8bit-cyan': '4px 4px 0px 0px rgba(0,243,255,0.5)',
+                        '8bit-gold': '4px 4px 0px 0px rgba(255,215,0,0.5)',
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'wave': 'wave 4s ease-in-out infinite alternate',
+                        'wave-slow': 'wave 6s ease-in-out infinite alternate-reverse',
+                        'rain': 'rain 0.5s linear infinite',
+                        'flicker': 'flicker 3s infinite alternate',
+                        'float': 'float 5s ease-in-out infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'confetti-fall': 'confetti-fall 3s linear forwards',
+                    },
+                    keyframes: {
+                        wave: {
+                            '0%': { transform: 'translateX(-5%)' },
+                            '100%': { transform: 'translateX(5%)' },
+                        },
+                        rain: {
+                            '0%': { transform: 'translateY(-10px) translateX(5px)', opacity: '0' },
+                            '50%': { opacity: '1' },
+                            '100%': { transform: 'translateY(200px) translateX(-15px)', opacity: '0' },
+                        },
+                        flicker: {
+                            '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                            '50%': { opacity: '0.6', transform: 'scale(1.05)' },
+                            '25%, 75%': { opacity: '0.8', transform: 'scale(0.95)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' }
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-8px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(8px, 0, 0)' }
+                        },
+                        'confetti-fall': {
+                            '0%': { transform: 'translateY(-100%) rotate(0deg)', opacity: 1 },
+                            '100%': { transform: 'translateY(100vh) rotate(720deg)', opacity: 0 }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #0b0f19;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 243, 255, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(255, 215, 0, 0.05), transparent 25%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .scanlines::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 50; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
+
+        .glitch-hover:hover {
+            animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            color: #00f3ff; text-shadow: 2px 2px #ff00ea, -2px -2px #00f3ff;
+        }
+
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); } 20% { transform: skew(-10deg); }
+            40% { transform: skew(10deg); } 60% { transform: skew(-5deg); }
+            80% { transform: skew(5deg); } 100% { transform: skew(0deg); }
+        }
+
+        .cursor-blink::after {
+            content: '█'; animation: blink 1s step-end infinite; color: #00f3ff; margin-left: 4px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #00f3ff; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ffd700; }
+
+        .glass-panel {
+            background: rgba(17, 25, 40, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.2); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .naskah-kuno {
+            background: url('https://www.transparenttextures.com/patterns/aged-paper.png'), #d4c4a8;
+            color: #3e2723; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); border: 2px solid #8d6e63;
+        }
+        
+        .visual-frame {
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.9), 0 0 20px rgba(0, 243, 255, 0.4);
+            border: 2px solid rgba(0, 243, 255, 0.6);
+        }
+
+        /* 8-Bit Dialog Box UI */
+        .retro-dialog {
+            background-color: #000;
+            border: 4px solid #fff;
+            position: relative;
+            image-rendering: pixelated;
+        }
+        .retro-dialog::before {
+            content: ''; position: absolute; top: -8px; bottom: -8px; left: 4px; right: 4px; background: #000; z-index: -1;
+        }
+        .retro-dialog::after {
+            content: ''; position: absolute; left: -8px; right: -8px; top: 4px; bottom: 4px; background: #000; z-index: -1;
+        }
+        .retro-name {
+            position: absolute; top: -16px; left: 16px; background: #fff; color: #000; padding: 4px 8px; font-size: 10px; z-index: 10; border: 2px solid #000;
+        }
+        .retro-avatar {
+            image-rendering: pixelated; border: 2px solid #fff; background: #222;
+        }
+
+        /* Particles */
+        .particle { position: absolute; border-radius: 50%; pointer-events: none; }
+        .confetti { width: 10px; height: 10px; position: fixed; z-index: 100; animation: confetti-fall 3s linear forwards; }
+    </style>
+</head>
+<body id="app-body" class="h-screen w-screen flex flex-col font-sans scanlines relative transition-colors duration-500">
+
+    <!-- Efek Ledakan Sukses (Confetti Container) -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
+
+    <!-- Header App -->
+    <header class="p-4 border-b border-hologram/30 flex justify-between items-center bg-darkbg/90 z-40 relative shadow-[0_4px_20px_rgba(0,243,255,0.1)]">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-atom text-hologram text-2xl animate-spin-slow"></i>
+            <div>
+                <h1 class="font-scifi text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-hologram to-blue-400 tracking-wider glitch-hover">KAPSUL WAKTU NUSANTARA</h1>
+                <p class="text-xs text-hologram/70 font-scifi"><i class="fa-solid fa-headphones text-[10px]"></i> Edisi Ultimate (Visual & Audio Aktif)</p>
+            </div>
+        </div>
+        <div id="status-bar" class="hidden flex gap-4 font-scifi text-sm">
+            <div class="flex flex-col items-end">
+                <span class="text-gray-400 text-xs">Sinkronisasi</span>
+                <span id="sync-score" class="text-hologram font-bold text-xl">100%</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 relative overflow-hidden flex items-center justify-center p-4 z-30">
+        
+        <!-- ================= MAIN MENU ================= -->
+        <div id="screen-menu" class="glass-panel p-8 rounded-xl w-full max-w-2xl text-center transform transition-all duration-500 relative overflow-hidden shadow-neon-blue">
+            <i class="fa-brands fa-galactic-senate absolute -top-10 -right-10 text-9xl text-hologram/10 animate-spin-slow"></i>
+            
+            <i class="fa-solid fa-infinity text-6xl text-hologram mb-6 animate-pulse drop-shadow-neon-blue relative z-10"></i>
+            <h2 class="font-scifi text-3xl font-bold mb-2 text-white relative z-10 drop-shadow-md">KALIBRASI SISTEM</h2>
+            <p class="text-gray-300 mb-8 font-light relative z-10">Kenakan perlengkapan audio Anda. Pemandu Arkeologi, tentukan parameter temporal sebelum kita menyelami sejarah.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mb-8 relative z-10">
+                <div class="space-y-3">
+                    <label class="font-scifi text-hologram text-sm tracking-widest"><i class="fa-solid fa-graduation-cap mr-2"></i>TINGKAT AKADEMIS</label>
+                    <select id="select-class" class="w-full bg-gray-900 border-2 border-hologram/50 text-white rounded p-3 outline-none focus:border-hologram transition font-sans">
+                        <option value="7">Kelas 7 (Lingkungan & Tokoh)</option>
+                        <option value="8" selected>Kelas 8 (Dinamika & Geopolitik)</option>
+                        <option value="9">Kelas 9 (Filosofi & Diplomasi)</option>
+                    </select>
+                </div>
+                <div class="space-y-3">
+                    <label class="font-scifi text-gold text-sm tracking-widest"><i class="fa-solid fa-fire mr-2"></i>TINGKAT KESUKARAN</label>
+                    <select id="select-diff" class="w-full bg-gray-900 border-2 border-gold/50 text-white rounded p-3 outline-none focus:border-gold transition font-sans">
+                        <option value="pemula">Pemula (Bantuan Penuh)</option>
+                        <option value="sedang" selected>Sedang (Analisis Kritis)</option>
+                        <option value="dewa">Dewa (Tanpa Petunjuk)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button onclick="app.startGame()" class="relative z-10 group px-8 py-4 bg-gray-900 border-2 border-hologram text-hologram font-scifi font-bold text-lg rounded overflow-hidden transition-all hover:text-darkbg hover:shadow-neon-blue w-full cursor-pointer shadow-[0_0_15px_rgba(0,243,255,0.3)]">
+                <span class="absolute inset-0 bg-hologram translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></span>
+                <span class="relative z-10"><i class="fa-solid fa-power-off mr-2"></i> INISIASI LOMPATAN WAKTU & AUDIO</span>
+            </button>
+        </div>
+
+        <!-- ================= GAME SCREEN ================= -->
+        <div id="screen-game" class="hidden w-full max-w-4xl h-full flex flex-col pt-2 pb-4">
+            
+            <!-- Story Content Area -->
+            <div id="story-container" class="flex-1 overflow-y-auto pr-4 pb-20 space-y-6 scroll-smooth relative">
+                
+                <!-- VISUAL HEADER (Proyeksi Holografis dengan Partikel) -->
+                <div id="visual-header" class="w-full h-56 md:h-72 rounded-xl relative overflow-hidden visual-frame mb-6 transition-all duration-1000 opacity-0 transform scale-95 flex items-center justify-center">
+                    <!-- Konten disuntikkan oleh JS -->
+                </div>
+
+                <div id="text-content" class="space-y-6">
+                    <!-- Konten teks disuntikkan di sini -->
+                </div>
+            </div>
+
+            <!-- Interaction Area (Fixed Bottom) -->
+            <div id="interaction-area" class="glass-panel p-5 rounded-t-2xl border-t-4 border-gold mt-2 hidden transform translate-y-full transition-transform duration-500 shadow-[0_-10px_40px_rgba(255,215,0,0.2)]">
+                <h3 class="font-scifi text-gold text-sm mb-3 flex items-center bg-black/50 inline-block px-3 py-1 rounded"><i class="fa-solid fa-scale-balanced mr-2"></i> EVALUASI ARKEOLOGIS</h3>
+                <div id="question-text" class="text-white mb-4 text-sm md:text-base font-semibold leading-relaxed"></div>
+                <div id="choices-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Choices injected here -->
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- ================= END SCREEN ================= -->
+        <div id="screen-end" class="hidden glass-panel p-8 rounded-xl w-full max-w-2xl text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold/30 via-darkbg/0 to-darkbg/0 animate-pulse"></div>
+            
+            <i class="fa-solid fa-trophy text-8xl text-gold mb-6 drop-shadow-[0_0_25px_rgba(255,215,0,0.8)] animate-float relative z-10"></i>
+            <h2 class="font-scifi text-4xl font-bold mb-2 text-white relative z-10">MISI SELESAI</h2>
+            <div class="my-6 p-6 bg-gray-900/90 rounded-xl border-2 border-hologram relative z-10 shadow-neon-blue">
+                <p class="text-sm text-gray-400 mb-2 font-scifi">SINKRONISASI WAKTU AKHIR:</p>
+                <p id="final-score" class="font-scifi text-7xl font-bold text-hologram drop-shadow-[0_0_20px_rgba(0,243,255,0.8)]">100%</p>
+                <div class="mt-4 bg-gold text-black font-pixel text-sm p-3 inline-block shadow-8bit-gold animate-bounce">
+                    RANK: <span id="final-rank">LEGENDA</span>
+                </div>
+            </div>
+            <p class="text-gray-300 mb-8 font-light italic relative z-10">"Kapsul waktu terhebat bukanlah mesin, melainkan pikiran dan ingatanmu."</p>
+            <button onclick="location.reload()" class="relative z-10 px-8 py-4 bg-hologram text-darkbg font-bold font-scifi rounded hover:bg-white transition shadow-neon-blue cursor-pointer">
+                KEMBALI KE PUSAT KENDALI
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Modal Feedback -->
+    <div id="modal-feedback" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div id="modal-content" class="glass-panel p-8 max-w-xl w-full rounded-2xl border-t-8 text-center transform scale-95 opacity-0 transition-all duration-300">
+            <div id="modal-icon" class="text-7xl mb-6"></div>
+            <h3 id="modal-title" class="font-scifi text-3xl font-bold mb-4"></h3>
+            <p id="modal-desc" class="text-gray-200 mb-8 text-base md:text-lg leading-relaxed bg-black/40 p-4 rounded"></p>
+            <button id="modal-btn" class="px-8 py-4 bg-gray-800 text-white border-2 border-gray-600 rounded-xl hover:bg-gray-700 transition font-scifi w-full font-bold text-lg cursor-pointer">
+                LANJUTKAN <i class="fa-solid fa-angles-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA SKENARIO ---
+        const gameData = [
+            {
+                id: "prologue",
+                type: "story",
+                visualTheme: "portal",
+                bgm: "portal",
+                naskah: "“...dan ketika ufuk timur menelan bayangan candi, sang pengembara akan menemukan bahwa waktu bukanlah sebuah garis lurus, melainkan jaring laba-laba yang menenun takdir Nusantara. Bacalah dengan mata batin, karena aksara ini ditulis bukan dengan tinta, melainkan dengan darah, keringat, dan doa para leluhur...”\n(Lontar Sandi Kala, Bait Pembuka)",
+                suasana: "Kamera imajiner bergerak perlahan melintasi gua kars bawah tanah yang lembap. Cahaya biru neon dari monitor canggih memantul di genangan air stalagmit, menerangi gerbang batu andesit raksasa. Gerbang itu dipenuhi aksara Kawi yang kini menyala keemasan karena reaksi mesin waktu Anda. Gua lenyap. Anda terhisap ke pusaran masa lalu...",
+                hasInteraction: false
+            },
+            {
+                id: "misi1",
+                type: "mission",
+                title: "MISI 1: Gemuruh Ombak Sriwijaya",
+                era: "Abad ke-8 Masehi",
+                visualTheme: "ocean",
+                bgm: "ocean",
+                naskah: "“...Bukanlah pedang yang menyatukan lautan, melainkan kapal yang membawa rempah, sutra, dan kebijaksanaan. Di bandar ini, angin monsun adalah raja. Carilah kebijaksanaan di antara riuh redam manusia dari ribuan pulau...”",
+                suasana: "Realitas mengeras. Anda berdiri di atas dermaga kayu ulin raksasa di Selat Malaka. Ratusan kapal jong bercadik membelah ombak. Biksu berjubah safron berjalan berdampingan dengan saudagar Arab, Tiongkok, dan India. Harmoni kehidupan yang luar biasa megah.",
+                dialog: [
+                    { char: "Narator", text: "Partikel debu emas berkumpul membentuk siluet seorang lelaki tua bertubuh bulat. Manifestasi UI Kapsul Waktu Anda meminjam bentuk Semar." },
+                    { char: "Semar", type: "guide", icon: "fa-street-view", text: "Hehehee... Orip iku mung mampir ngombe, Anak Muda. Hidup ini hanyalah singgah sejenak untuk minum. Megah sekali tempat ini, bukan?" },
+                    { char: "Pemandu", type: "player", icon: "fa-user-astronaut", text: "Ini Sriwijaya? Bagaimana mereka menyatukan begitu banyak bangsa dan agama tanpa runtuh?" },
+                    { char: "Semar", type: "guide", icon: "fa-street-view", text: "Mereka menaklukkan hati dengan menjadi muara bagi segala arus budaya. Bukankah persatuan itu kunci? Ada segel sejarah di gerbang bandar ini. Mari kita uji analisamu." }
+                ],
+                materi: "Fakta Arkeologi: Sriwijaya dikenal sebagai pusat penyebaran Buddha Mahayana, namun mereka sangat toleran. Prasasti peninggalan mereka sering mencampurkan unsur Hindu, Buddha, dan Animisme (kepercayaan leluhur lokal).",
+                question: {
+                    dimensi: "Kebinekaan Global & Bernalar Kritis",
+                    text: "Terdapat tugu prasasti peninggalan Sriwijaya berisi doa Buddha Mahayana, namun ukirannya bergaya Hindu, dan dibuat oleh seniman lokal (Animisme). Apa kesimpulan paling kritis mengenai strategi Sriwijaya?",
+                    options: [
+                        { id: "A", text: "Asimilasi paksa dengan menghancurkan identitas asli demi budaya keraton.", correct: false, explanation: "Salah. Keberagaman gaya pada prasasti membantah adanya penghancuran identitas." },
+                        { id: "B", text: "Menyintesiskan berbagai nilai budaya sebagai alat diplomasi pemersatu masyarakat majemuk.", correct: true, explanation: "Luar Biasa! Toleransi dan sinkretisme budaya adalah senjata diplomasi tercanggih Sriwijaya." },
+                        { id: "C", text: "Mengisolasi pelabuhan dari kekuatan asing sepenuhnya.", correct: false, explanation: "Salah. Sriwijaya justru merupakan pusat perdagangan internasional yang sangat terbuka." }
+                    ]
+                }
+            },
+            {
+                id: "misi2",
+                type: "mission",
+                title: "MISI 2: Bara di Ujung Keris",
+                era: "1825, Gua Selarong, Jawa",
+                visualTheme: "cave",
+                bgm: "cave",
+                naskah: "“...Ketika tanah para raja diinjak sepatu besi, perlawanan tidak lahir di istana yang nyaman, melainkan di akar-akar pepohonan, di balik kabut bukit kapur, dan di dalam dada rakyat yang menolak menjadi budak...”",
+                suasana: "Kilatan petir menyambar! Anda berada di Gua Selarong yang remang. Aroma mesiu dan damar terbakar menusuk hidung. Ratusan petani bersenjata bambu runcing bersiap dalam diam di sekeliling api unggun yang menyala-nyala.",
+                dialog: [
+                    { char: "Narator", text: "Sesosok pria berjubah putih dengan keris terselip menatap peta dengan tajam. Pangeran Diponegoro." },
+                    { char: "P. Diponegoro", type: "hero", icon: "fa-chess-knight", text: "Kau dari masa depan? Apakah di masamu rakyatku sudah bernapas tanpa menghirup asap meriam penjajah?" },
+                    { char: "Pemandu", type: "player", icon: "fa-user-astronaut", text: "Ya, Pangeran. Namun bagaimana Anda menggerakkan ribuan petani biasa untuk melawan pasukan kolonial yang modern?" },
+                    { char: "P. Diponegoro", type: "hero", icon: "fa-chess-knight", text: "Senjata mematikan adalah harga diri. 'Sadumuk bathuk, sanyari bumi ditohi tekan pati' (Senggol kehormatan, dibela sampai mati). Rakyat bersatu karena penderitaan yang sama." },
+                    { char: "Semar", type: "guide", icon: "fa-street-view", text: "Belanda punya meriam, Pangeran punya gotong royong gerilya." }
+                ],
+                materi: "Data Militer: Perang Jawa membuat Belanda bangkrut. Gerilya Diponegoro sangat bergantung pada penduduk desa yang secara rahasia dan sukarela menyembunyikan pasukan serta membagi sisa panen mereka.",
+                question: {
+                    dimensi: "Gotong Royong & Kepemimpinan",
+                    text: "Dalam taktik gerilya, apa alasan utama rakyat rela mempertaruhkan nyawa melindungi rute logistik pasukan Diponegoro meski diancam hukuman berat oleh Belanda?",
+                    options: [
+                        { id: "A", text: "Karena rakyat dibayar dengan upah emas dari keraton.", correct: false, explanation: "Salah. Pasukan Diponegoro berjuang dengan dana dan logistik yang sangat terbatas." },
+                        { id: "B", text: "Pangeran menyatukan sentimen keagamaan, penderitaan kolektif, dan kepemimpinan yang merakyat (Gotong Royong).", correct: true, explanation: "Tepat Sekali! Kepemimpinan karismatik Pangeran meleburkan batas kelas, menciptakan perlawanan rakyat semesta." },
+                        { id: "C", text: "Karena pasukan Pangeran menggunakan paksaan dan ancaman.", correct: false, explanation: "Salah. Memaksa rakyat justru akan menghancurkan sistem gerilya itu sendiri." }
+                    ]
+                }
+            },
+            {
+                id: "misi3",
+                type: "mission",
+                title: "MISI 3: Tinta Emas Sang Fajar",
+                era: "17 Ags 1945, 02:30 WIB",
+                visualTheme: "vintage",
+                bgm: "vintage",
+                naskah: "“...Di ujung malam tergelap, sekelompok pemuda menolak menunggu hadiah kemerdekaan dari langit. Dengan secarik kertas dan mesin ketik yang tersendat, mereka meruntuhkan rantai penjajahan selamanya...”",
+                suasana: "Suasana sunyi tegang di ruang makan Laksamana Maeda. Cahaya lampu gantung menerangi meja. Aroma kopi tubruk dan ketukan keras mesin tik memecah kesunyian malam. Wajah-wajah lelah sedang berdebat sengit.",
+                dialog: [
+                    { char: "Soekarno", type: "hero", icon: "fa-bullhorn", text: "Kita tidak bisa menunggu janji manis Tokyo! Kemerdekaan ini harus lahir dari rahim Ibu Pertiwi sendiri!" },
+                    { char: "Moh. Hatta", type: "hero", icon: "fa-glasses", text: "Benar, Bung. Namun kalimat proklamasi harus cermat. Kita memindahkan kekuasaan negara, ini tanggung jawab hukum, bukan sekadar deklarasi emosional." },
+                    { char: "Semar", type: "guide", icon: "fa-street-view", text: "Lihatlah, satu adalah api pembakar semangat, satunya adalah air pendingin logika. Kemerdekaan membutuhkan keduanya." }
+                ],
+                materi: "Data Diplomasi: Golongan pemuda awalnya menuntut teks proklamasi yang berbunyi 'Merebut kekuasaan negara'. Namun dwitunggal Soekarno-Hatta mengubahnya menjadi kalimat elegan: 'Hal-hal yang mengenai pemindahan kekuasaan... diselenggarakan dengan cara saksama'.",
+                question: {
+                    dimensi: "Kemandirian, Etika & Kreativitas",
+                    text: "Mengapa Soekarno-Hatta memilih untuk merumuskan teks proklamasi dengan bahasa yang 'saksama' dan sangat diplomatis dibandingkan dengan kalimat yang provokatif/mengajak perang?",
+                    options: [
+                        { id: "A", text: "Untuk menunjukkan kedewasaan politik, memastikan transisi aman, dan mempermudah pengakuan internasional.", correct: true, explanation: "Sempurna! Bahasa diplomatis membuktikan bahwa Indonesia adalah negara merdeka yang beradab dan siap berdaulat secara hukum." },
+                        { id: "B", text: "Karena mereka merasa takut berhadapan langsung dengan sisa pasukan militer Jepang.", correct: false, explanation: "Salah. Pilihan kata didasari oleh kecerdasan strategi politik jangka panjang, bukan ketakutan." },
+                        { id: "C", text: "Agar pemerintah Belanda merasa kasihan dan memberikan kemerdekaan secara damai.", correct: false, explanation: "Salah. Diplomasi bangsa yang merdeka tidak dibangun di atas belas kasihan musuh." }
+                    ]
+                }
+            }
+        ];
+
+        // --- SISTEM APLIKASI ---
+        const app = {
+            currentMissionIndex: -1,
+            score: 100,
+            settings: { class: 8, diff: 'sedang' },
+            
+            // Audio System Engine
+            audioReady: false,
+            bgmNode: null,
+            bgmLoop: null,
+            sfxSynth: null,
+            blipSynth: null,
+
+            initAudio() {
+                if(this.audioReady) return;
+                
+                // Synthesizer untuk SFX Benar/Salah/Klik
+                this.sfxSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "sawtooth" },
+                    envelope: { attack: 0.05, decay: 0.1, sustain: 0.3, release: 1 }
+                }).toDestination();
+                this.sfxSynth.volume.value = -12;
+
+                // Synthesizer 8-Bit untuk ketikan text
+                this.blipSynth = new Tone.Synth({
+                    oscillator: { type: "square" },
+                    envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.01 }
+                }).toDestination();
+                this.blipSynth.volume.value = -20;
+
+                this.audioReady = true;
+                Tone.Transport.start();
+                console.log("Audio Engine Online.");
+            },
+
+            stopBGM() {
+                if(this.bgmLoop) { this.bgmLoop.stop(); this.bgmLoop.dispose(); }
+                if(this.bgmNode) { this.bgmNode.dispose(); }
+            },
+
+            playBGM(theme) {
+                this.stopBGM();
+                if(!this.audioReady) return;
+
+                if (theme === 'portal') {
+                    // Deep Drone
+                    this.bgmNode = new Tone.FMSynth({ modulationIndex: 2 }).toDestination();
+                    this.bgmNode.volume.value = -25;
+                    this.bgmLoop = new Tone.Loop(time => {
+                        this.bgmNode.triggerAttackRelease("C2", "2m", time);
+                    }, "2m").start(0);
+                } 
+                else if (theme === 'ocean') {
+                    // Ocean Waves + Marimba
+                    const filter = new Tone.AutoFilter("0.1hz").toDestination().start();
+                    this.bgmNode = new Tone.Noise("pink").connect(filter);
+                    this.bgmNode.volume.value = -20;
+                    this.bgmNode.start();
+                    // Optional gentle pad could go here, keeping it simple for stability
+                }
+                else if (theme === 'cave') {
+                    // Creepy Cave Drops
+                    this.bgmNode = new Tone.MembraneSynth().toDestination();
+                    this.bgmNode.volume.value = -15;
+                    this.bgmLoop = new Tone.Loop(time => {
+                        if(Math.random() > 0.5) this.bgmNode.triggerAttackRelease("C1", "8n", time);
+                    }, "1m").start(0);
+                }
+                else if (theme === 'vintage') {
+                    // Vinyl Crackle
+                    this.bgmNode = new Tone.Noise("brown").toDestination();
+                    this.bgmNode.volume.value = -25;
+                    this.bgmNode.start();
+                }
+            },
+
+            playSound(type, charType = null) {
+                if(!this.audioReady) return;
+                const now = Tone.now();
+                
+                try {
+                    if(type === 'click') {
+                        this.sfxSynth.triggerAttackRelease("C6", "32n", now);
+                    } else if(type === 'success') {
+                        // Meriah Fanfare
+                        this.sfxSynth.triggerAttackRelease(["C4", "E4", "G4"], "8n", now);
+                        this.sfxSynth.triggerAttackRelease(["E4", "G4", "C5"], "8n", now + 0.15);
+                        this.sfxSynth.triggerAttackRelease(["G4", "C5", "E5"], "4n", now + 0.3);
+                    } else if(type === 'error') {
+                        // Dramatic descend
+                        this.sfxSynth.triggerAttackRelease("C3", "8n", now);
+                        this.sfxSynth.triggerAttackRelease("F2", "8n", now + 0.2);
+                        this.sfxSynth.triggerAttackRelease("C2", "2n", now + 0.4);
+                    } else if(type === 'warp') {
+                        this.sfxSynth.triggerAttackRelease(["C3", "G3", "C4"], "1m", now);
+                    } else if(type === 'blip') {
+                        let freq = "C5"; // Default
+                        if(charType === 'guide') freq = "C3"; // Semar = Low Pitch
+                        else if(charType === 'hero') freq = "E4"; // Pahlawan = Mid
+                        else if(charType === 'player') freq = "A4"; // Pemain = High
+                        this.blipSynth.triggerAttackRelease(freq, "32n", now);
+                    }
+                } catch(e) { console.warn("Audio glitch prevented"); }
+            },
+
+            async startGame() {
+                try { 
+                    await Tone.start(); 
+                    this.initAudio(); 
+                } catch(e){ console.error("Audio Context failed to start"); }
+                
+                this.playSound('warp');
+
+                this.settings.class = document.getElementById('select-class').value;
+                this.settings.diff = document.getElementById('select-diff').value;
+
+                document.getElementById('screen-menu').classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    document.getElementById('screen-menu').classList.add('hidden');
+                    document.getElementById('screen-game').classList.remove('hidden');
+                    document.getElementById('status-bar').classList.remove('hidden');
+                    
+                    this.currentMissionIndex = 0;
+                    this.renderCurrentMission();
+                }, 500);
+            },
+
+            createParticles(theme, container) {
+                let html = '';
+                if(theme === 'ocean') {
+                    for(let i=0; i<15; i++) {
+                        let top = Math.random() * 100;
+                        let left = Math.random() * 100;
+                        let animDur = 3 + Math.random() * 4;
+                        html += `<div class="particle bg-white opacity-40 blur-[1px] w-1 h-1" style="top:${top}%; left:${left}%; animation: wave ${animDur}s ease-in-out infinite alternate;"></div>`;
+                    }
+                } else if(theme === 'cave') {
+                    for(let i=0; i<20; i++) {
+                        let left = Math.random() * 100;
+                        let animDur = 2 + Math.random() * 3;
+                        let size = Math.random() * 4 + 2;
+                        html += `<div class="particle bg-orange-500 opacity-60 blur-[2px]" style="bottom: 0; left:${left}%; width:${size}px; height:${size}px; animation: float ${animDur}s ease-in infinite;"></div>`;
+                    }
+                } else if(theme === 'vintage') {
+                    for(let i=0; i<30; i++) {
+                        let top = Math.random() * 100;
+                        let left = Math.random() * 100;
+                        html += `<div class="particle bg-yellow-200/30 w-1 h-1" style="top:${top}%; left:${left}%; animation: flicker ${Math.random()*4+2}s infinite;"></div>`;
+                    }
+                }
+                return `<div class="absolute inset-0 pointer-events-none z-40">${html}</div>`;
+            },
+
+            renderVisualHeader(theme) {
+                const vHeader = document.getElementById('visual-header');
+                vHeader.classList.remove('opacity-100', 'scale-100');
+                vHeader.classList.add('opacity-0', 'scale-95');
+                
+                setTimeout(() => {
+                    let html = '';
+                    if(theme === 'portal') {
+                        html = `
+                        <div class="absolute inset-0 bg-darkbg flex items-center justify-center">
+                            <div class="w-40 h-40 rounded-full border-[8px] border-dotted border-hologram animate-spin-slow shadow-neon-blue z-10"></div>
+                            <div class="w-24 h-24 absolute rounded-full border-[4px] border-dashed border-blue-500 animate-[spin_4s_linear_infinite_reverse] z-10"></div>
+                            <div class="absolute w-20 h-20 rounded-full bg-hologram/40 animate-pulse blur-xl z-0"></div>
+                            <i class="fa-solid fa-infinity text-5xl text-white absolute z-20"></i>
+                            <div class="absolute bottom-2 left-2 text-[10px] text-hologram font-scifi">SYS.PORTAL // ACTIVE</div>
+                        </div>`;
+                    } 
+                    else if (theme === 'ocean') {
+                        html = `
+                        <div class="absolute inset-0 bg-gradient-to-b from-cyan-400 via-blue-500 to-blue-900 overflow-hidden">
+                            <div class="absolute top-10 right-20 w-24 h-24 rounded-full bg-yellow-200 shadow-[0_0_60px_rgba(255,255,0,0.8)] z-0"></div>
+                            <i class="fa-solid fa-sailboat text-7xl text-amber-950 absolute bottom-10 left-1/4 transform -rotate-3 drop-shadow-2xl z-20 animate-wave"></i>
+                            <i class="fa-solid fa-ship text-5xl text-amber-900/60 absolute bottom-14 right-1/4 transform rotate-2 z-10 animate-wave-slow"></i>
+                            <div class="absolute -bottom-6 w-[200%] h-24 bg-blue-600 opacity-70 animate-wave rounded-t-[100%] blur-[2px] z-30"></div>
+                            <div class="absolute -bottom-10 w-[200%] h-28 bg-blue-800 opacity-90 animate-wave-slow rounded-t-[100%] z-40 shadow-[0_-10px_20px_rgba(0,0,0,0.3)]"></div>
+                            ${this.createParticles('ocean')}
+                        </div>`;
+                    }
+                    else if (theme === 'cave') {
+                        html = `
+                        <div class="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-800 to-black overflow-hidden">
+                            <!-- Stalactites -->
+                            <div class="absolute -top-10 left-10 w-0 h-0 border-l-[30px] border-l-transparent border-r-[30px] border-r-transparent border-t-[100px] border-t-gray-900 z-20 drop-shadow-lg"></div>
+                            <div class="absolute -top-5 right-20 w-0 h-0 border-l-[40px] border-l-transparent border-r-[40px] border-r-transparent border-t-[150px] border-t-gray-900 z-20 drop-shadow-lg"></div>
+                            <!-- Fire -->
+                            <div class="absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 w-64 h-64 bg-orange-600 rounded-full blur-[80px] animate-flicker z-0"></div>
+                            <i class="fa-brands fa-gripfire text-7xl text-orange-400 absolute bottom-2 left-1/2 transform -translate-x-1/2 animate-pulse z-10 drop-shadow-[0_0_20px_rgba(255,165,0,1)]"></i>
+                            <i class="fa-solid fa-khanda text-5xl text-gray-300 absolute bottom-6 left-[35%] transform rotate-[60deg] z-10 drop-shadow-lg"></i>
+                            ${this.createParticles('cave')}
+                        </div>`;
+                    }
+                    else if (theme === 'vintage') {
+                        html = `
+                        <div class="absolute inset-0 bg-gradient-to-br from-[#8b7355] via-[#5c4a36] to-[#2a1f14] overflow-hidden sepia-[0.5]">
+                            <div class="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,0.9)] z-20 pointer-events-none"></div>
+                            <div class="absolute top-0 left-0 w-full h-1/3 bg-red-600/20 z-0 blur-xl"></div>
+                            <div class="absolute bottom-0 left-0 w-full h-1/3 bg-white/20 z-0 blur-xl"></div>
+                            <i class="fa-solid fa-typewriter text-[120px] text-black/70 absolute -bottom-4 right-8 drop-shadow-2xl z-10 transform -rotate-6"></i>
+                            <i class="fa-solid fa-scroll text-[80px] text-white/50 absolute top-10 left-10 z-10 transform rotate-12 drop-shadow-lg"></i>
+                            ${this.createParticles('vintage')}
+                        </div>`;
+                    }
+
+                    vHeader.innerHTML = html;
+                    vHeader.classList.remove('opacity-0', 'scale-95');
+                    vHeader.classList.add('opacity-100', 'scale-100');
+                }, 500);
+            },
+
+            async renderCurrentMission() {
+                this.playSound('warp');
+                const data = gameData[this.currentMissionIndex];
+                const textContainer = document.getElementById('text-content');
+                textContainer.innerHTML = '';
+                
+                const interactArea = document.getElementById('interaction-area');
+                interactArea.classList.add('translate-y-full');
+                setTimeout(() => interactArea.classList.add('hidden'), 500);
+
+                // Setup Visuals & Audio
+                this.renderVisualHeader(data.visualTheme);
+                this.playBGM(data.bgm);
+
+                // Judul & Era
+                if(data.title) {
+                    const titleEl = document.createElement('h2');
+                    titleEl.className = "font-scifi text-2xl md:text-4xl font-bold text-hologram border-b-2 border-hologram/50 pb-2 drop-shadow-neon-blue mt-6 uppercase";
+                    titleEl.innerHTML = `<span class="text-white">${data.title.split(':')[0]}:</span> ${data.title.split(':')[1] || ''}`;
+                    textContainer.appendChild(titleEl);
+                    
+                    const eraEl = document.createElement('div');
+                    eraEl.className = "text-gold font-scifi text-sm tracking-widest mb-8 bg-gold/10 inline-block px-4 py-2 rounded-lg border border-gold/40 shadow-neon-gold";
+                    eraEl.innerHTML = `<i class="fa-solid fa-satellite-dish mr-2 animate-pulse"></i> KOORDINAT: ${data.era.toUpperCase()}`;
+                    textContainer.appendChild(eraEl);
+                }
+
+                // Naskah Kuno
+                const naskahEl = document.createElement('div');
+                naskahEl.className = "naskah-kuno p-8 rounded-xl text-justify leading-relaxed italic mb-8 relative overflow-hidden text-lg md:text-xl font-serif shadow-[0_10px_30px_rgba(0,0,0,0.5)]";
+                textContainer.appendChild(naskahEl);
+                await this.typeText(naskahEl, data.naskah, 15, 'text');
+
+                // Suasana
+                const suasanaEl = document.createElement('div');
+                suasanaEl.className = "text-gray-300 italic leading-relaxed p-5 border-l-4 border-hologram bg-hologram/10 rounded-r-lg shadow-inner";
+                textContainer.appendChild(suasanaEl);
+                await this.typeText(suasanaEl, `[PEMINDAIAN LINGKUNGAN] ${data.suasana}`, 10, 'text');
+
+                // Interaksi/Lanjut (Prolog)
+                if(!data.hasInteraction && data.id === "prologue") {
+                    const btnContainer = document.createElement('div');
+                    btnContainer.className = "text-center pt-10 pb-10";
+                    btnContainer.innerHTML = `<button onclick="app.nextMission()" class="px-10 py-4 border-[3px] border-hologram bg-darkbg text-hologram font-scifi font-bold text-xl hover:bg-hologram hover:text-darkbg transition-all rounded-xl animate-pulse shadow-neon-blue cursor-pointer">MEMASUKI LORONG WAKTU <i class="fa-solid fa-meteor ml-2"></i></button>`;
+                    textContainer.appendChild(btnContainer);
+                    this.scrollToBottom();
+                    return;
+                }
+
+                // DIALOG 8-BIT COMIC MODE
+                if(data.dialog && data.dialog.length > 0) {
+                    const dialogArea = document.createElement('div');
+                    dialogArea.className = "space-y-6 mt-10 pt-6 border-t-2 border-dashed border-gray-700";
+                    textContainer.appendChild(dialogArea);
+
+                    for(let d of data.dialog) {
+                        if(d.char === 'Narator') {
+                            const narEl = document.createElement('p');
+                            narEl.className = "text-center text-gray-500 font-sans italic text-sm py-2";
+                            dialogArea.appendChild(narEl);
+                            await this.typeText(narEl, d.text, 15, 'text');
+                        } else {
+                            // UI Retro JRPG Box
+                            const dEl = document.createElement('div');
+                            let borderColor = "border-white";
+                            let nameBg = "bg-white text-black";
+                            let shadowClass = "shadow-8bit-white";
+                            
+                            if(d.type === 'guide') { borderColor = "border-hologram"; nameBg = "bg-hologram text-black"; shadowClass = "shadow-8bit-cyan"; }
+                            if(d.type === 'hero') { borderColor = "border-gold"; nameBg = "bg-gold text-black"; shadowClass = "shadow-8bit-gold"; }
+                            if(d.type === 'player') { borderColor = "border-blue-400"; nameBg = "bg-blue-400 text-black"; }
+
+                            dEl.className = `retro-dialog flex gap-4 p-4 md:p-6 mb-6 ${borderColor} ${shadowClass} mx-2 md:mx-4 mt-8`;
+                            dEl.innerHTML = `
+                                <div class="retro-name ${nameBg} font-pixel shadow-md border-2 border-black">${d.char.toUpperCase()}</div>
+                                <div class="w-12 h-12 md:w-16 md:h-16 flex-shrink-0 flex items-center justify-center retro-avatar text-2xl md:text-3xl text-white">
+                                    <i class="fa-solid ${d.icon || 'fa-user'}"></i>
+                                </div>
+                                <div class="dialog-text font-pixel text-[10px] md:text-xs text-white leading-loose tracking-wide w-full pr-4 relative">
+                                    <div class="text-content-wrapper"></div>
+                                    <i class="fa-solid fa-caret-down absolute bottom-[-10px] right-0 text-hologram animate-bounce hidden arrow-indicator"></i>
+                                </div>
+                            `;
+                            dialogArea.appendChild(dEl);
+                            
+                            const textWrapper = dEl.querySelector('.text-content-wrapper');
+                            const arrow = dEl.querySelector('.arrow-indicator');
+                            
+                            // Ketik teks dialog dengan SFX blip
+                            await this.typeText(textWrapper, d.text, 30, 'dialog', d.type);
+                            
+                            arrow.classList.remove('hidden');
+                            this.scrollToBottom();
+                            await this.wait(600); // Jeda sejenak sebelum dialog berikutnya
+                        }
+                    }
+                }
+
+                // Materi Data Log
+                if(data.materi) {
+                    const materiBtn = document.createElement('button');
+                    materiBtn.className = "w-full text-left mt-10 p-5 border-[3px] border-gold/60 bg-[#1a1705] text-gold rounded-xl font-sans cursor-pointer hover:bg-gold/10 hover:border-gold transition-all group shadow-neon-gold";
+                    materiBtn.innerHTML = `
+                        <div class="font-scifi font-bold mb-2 text-lg flex items-center justify-between">
+                            <span><i class="fa-solid fa-database mr-3 group-hover:animate-pulse"></i> DATA LOG ARKEOLOGI</span>
+                            <i class="fa-solid fa-chevron-down opacity-50 group-hover:opacity-100"></i>
+                        </div>
+                        <div class="text-sm md:text-base font-light text-gray-200 hidden group-focus:block active:block leading-relaxed border-t border-gold/30 pt-3 mt-2">${data.materi}</div>
+                    `;
+                    materiBtn.onclick = function() {
+                        const textEl = this.querySelector('.text-sm');
+                        if(textEl.classList.contains('hidden')) {
+                            textEl.classList.remove('hidden');
+                            app.playSound('click');
+                            app.scrollToBottom();
+                        }
+                    };
+                    textContainer.appendChild(materiBtn);
+                }
+
+                // Tampilkan Pertanyaan
+                await this.wait(1000);
+                this.renderQuestion(data.question);
+            },
+
+            renderQuestion(qData) {
+                const interactArea = document.getElementById('interaction-area');
+                const qText = document.getElementById('question-text');
+                const choicesBox = document.getElementById('choices-container');
+
+                qText.innerHTML = `<span class="text-gold text-xs block mb-3 font-scifi bg-black px-2 py-1 rounded inline-block border border-gold/30"><i class="fa-solid fa-fingerprint mr-2"></i>Dimensi: ${qData.dimensi}</span><br>${qData.text}`;
+                choicesBox.innerHTML = '';
+
+                qData.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "text-left p-4 rounded-lg bg-gray-900 border-2 border-gray-600 hover:border-hologram hover:bg-gray-800 hover:shadow-neon-blue transition-all text-sm md:text-base text-gray-200 cursor-pointer flex items-start gap-4 group";
+                    btn.innerHTML = `<span class="font-scifi font-bold text-darkbg bg-gray-500 px-3 py-2 rounded shadow-sm group-hover:bg-hologram transition-colors">${opt.id}</span> <span class="pt-1 flex-1 leading-relaxed">${opt.text}</span>`;
+                    btn.onclick = () => this.handleChoice(opt);
+                    choicesBox.appendChild(btn);
+                });
+
+                interactArea.classList.remove('hidden');
+                setTimeout(() => {
+                    interactArea.classList.remove('translate-y-full');
+                    this.scrollToBottom();
+                }, 50);
+            },
+
+            handleChoice(selectedOption) {
+                const isCorrect = selectedOption.correct;
+                
+                if(!isCorrect) {
+                    // Animasi Kegagalan Dramatis
+                    this.playSound('error');
+                    this.score -= 15;
+                    if(this.score < 0) this.score = 0;
+                    
+                    document.getElementById('sync-score').innerText = this.score + '%';
+                    
+                    // Efek Glitch & Shake Layar
+                    const body = document.getElementById('app-body');
+                    body.classList.add('bg-red-900/30', 'animate-shake');
+                    setTimeout(() => {
+                        body.classList.remove('bg-red-900/30', 'animate-shake');
+                    }, 500);
+
+                    this.showModal("SINKRONISASI GAGAL", selectedOption.explanation, false);
+                } else {
+                    // Animasi Kemenangan Meriah
+                    this.playSound('success');
+                    this.triggerConfetti();
+                    
+                    const body = document.getElementById('app-body');
+                    body.classList.add('bg-hologram/10');
+                    setTimeout(() => body.classList.remove('bg-hologram/10'), 1000);
+
+                    this.showModal("SINKRONISASI BERHASIL", selectedOption.explanation, true);
+                }
+            },
+
+            triggerConfetti() {
+                const container = document.getElementById('confetti-container');
+                container.innerHTML = '';
+                const colors = ['bg-gold', 'bg-hologram', 'bg-white', 'bg-blue-500'];
+                
+                for(let i=0; i<50; i++) {
+                    const conf = document.createElement('div');
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    conf.className = `confetti ${color}`;
+                    conf.style.left = Math.random() * 100 + 'vw';
+                    conf.style.animationDelay = Math.random() * 0.5 + 's';
+                    container.appendChild(conf);
+                }
+                
+                // Cleanup after animation
+                setTimeout(() => container.innerHTML = '', 3500);
+            },
+
+            showModal(title, desc, isCorrect) {
+                const modal = document.getElementById('modal-feedback');
+                const content = document.getElementById('modal-content');
+                const icon = document.getElementById('modal-icon');
+                const btn = document.getElementById('modal-btn');
+                
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-title').className = `font-scifi text-3xl font-bold mb-4 drop-shadow-md ${isCorrect ? 'text-hologram' : 'text-red-500'}`;
+                document.getElementById('modal-desc').innerText = desc;
+                
+                if(isCorrect) {
+                    icon.innerHTML = '<i class="fa-solid fa-star text-gold drop-shadow-neon-gold animate-[spin_3s_linear_infinite]"></i>';
+                    content.className = `glass-panel p-8 max-w-xl w-full rounded-2xl border-t-8 text-center transform transition-all duration-300 scale-100 opacity-100 border-hologram shadow-neon-blue bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMCwyNDMsMjU1LDAuMSkiLz48L3N2Zz4=')]`;
+                    btn.className = "px-8 py-4 bg-hologram text-darkbg rounded-xl hover:bg-white transition font-scifi w-full font-bold text-lg cursor-pointer mt-4 shadow-neon-blue";
+                    btn.innerHTML = 'MELANJUTKAN LOMPATAN <i class="fa-solid fa-space-shuttle ml-2"></i>';
+                } else {
+                    icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500 drop-shadow-[0_0_20px_rgba(255,0,0,1)] animate-pulse"></i>';
+                    content.className = `glass-panel p-8 max-w-xl w-full rounded-2xl border-t-8 text-center transform transition-all duration-300 scale-100 opacity-100 border-red-500 shadow-[0_0_40px_rgba(255,0,0,0.4)] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDAsMCwwLjEpIi8+PC9zdmc+')]`;
+                    btn.className = "px-8 py-4 bg-gray-900 text-white border-2 border-red-600 rounded-xl hover:bg-red-900 transition font-scifi w-full font-bold text-lg cursor-pointer mt-4 shadow-[0_0_15px_rgba(255,0,0,0.5)]";
+                    btn.innerHTML = '<i class="fa-solid fa-clock-rotate-left mr-2"></i> ANALISIS ULANG (-15%)';
+                }
+                
+                modal.classList.remove('hidden');
+
+                btn.onclick = () => {
+                    this.playSound('click');
+                    modal.classList.add('hidden');
+                    content.classList.replace('scale-100', 'scale-95');
+                    content.classList.replace('opacity-100', 'opacity-0');
+                    if(isCorrect) {
+                        this.nextMission();
+                    }
+                };
+            },
+
+            nextMission() {
+                this.currentMissionIndex++;
+                if(this.currentMissionIndex < gameData.length) {
+                    this.renderCurrentMission();
+                } else {
+                    this.endGame();
+                }
+            },
+
+            endGame() {
+                this.playSound('success');
+                this.stopBGM();
+                this.playBGM('portal'); // Ambience akhir
+                this.renderVisualHeader('portal');
+
+                document.getElementById('text-content').innerHTML = '';
+                document.getElementById('interaction-area').classList.add('hidden');
+                
+                setTimeout(() => {
+                    document.getElementById('screen-game').classList.add('hidden');
+                    document.getElementById('status-bar').classList.add('hidden');
+                    const endScreen = document.getElementById('screen-end');
+                    endScreen.classList.remove('hidden');
+                    
+                    document.getElementById('final-score').innerText = this.score + '%';
+                    let rank = "PEMAGANG ARKEOLOGI";
+                    if(this.score >= 100) rank = "LEGENDA NUSANTARA";
+                    else if (this.score >= 70) rank = "AHLI SEJARAH SENIOR";
+                    else if (this.score >= 40) rank = "PENJELAJAH WAKTU";
+                    
+                    document.getElementById('final-rank').innerText = rank;
+                    this.triggerConfetti();
+                }, 1000);
+            },
+
+            async typeText(element, text, speed = 20, mode = 'text', charType = 'guide') {
+                return new Promise(resolve => {
+                    element.innerHTML = '<span class="cursor-blink inline-block w-2 h-4 bg-hologram ml-1"></span>';
+                    let i = 0;
+                    
+                    // Kecepatan adaptif
+                    let actualSpeed = speed;
+                    if(text.length > 200) actualSpeed = speed * 0.3;
+
+                    const typeWriter = () => {
+                        if (i < text.length) {
+                            let char = text.charAt(i);
+                            if(char === '\n') char = '<br><br>';
+                            
+                            const textNode = document.createElement('span');
+                            textNode.innerHTML = char;
+                            
+                            const cursor = element.querySelector('.cursor-blink');
+                            if(cursor) element.insertBefore(textNode, cursor);
+                            else element.appendChild(textNode);
+                            
+                            // Audio Blip (Setiap beberapa karakter agar tidak bising)
+                            if (mode === 'dialog' && char !== ' ' && i % 3 === 0) {
+                                app.playSound('blip', charType);
+                            }
+
+                            i++;
+                            app.scrollToBottom();
+                            setTimeout(typeWriter, actualSpeed);
+                        } else {
+                            const cursor = element.querySelector('.cursor-blink');
+                            if(cursor) cursor.remove();
+                            resolve();
+                        }
+                    }
+                    typeWriter();
+                });
+            },
+
+            wait(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+
+            scrollToBottom() {
+                const container = document.getElementById('story-container');
+                container.scrollTop = container.scrollHeight;
+            }
+        };
+
+        window.onload = () => {
+            console.log("Kapsul Waktu Ultimate: Inisiasi UI Selesai.");
+        };
+    </script>
+</body>
+</html>
